@@ -18,7 +18,9 @@ data class Predmet(
     @JsonIgnore
     @ManyToMany(
         fetch = FetchType.EAGER,
-        cascade = [CascadeType.PERSIST, CascadeType.MERGE]
+        cascade = [
+            CascadeType.PERSIST, CascadeType.MERGE
+        ]
     )
     @JoinTable(
         name = "teachpred",
@@ -39,6 +41,6 @@ data class Predmet(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id )"
+        return this::class.simpleName + "(id = $id)"
     }
 }

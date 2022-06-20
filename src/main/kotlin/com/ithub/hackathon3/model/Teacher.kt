@@ -15,7 +15,6 @@ data class Teacher(
     val id: String
 ) {
 
-
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "teachers")
     val predmets: MutableSet<Predmet> = mutableSetOf()

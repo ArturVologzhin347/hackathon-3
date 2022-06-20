@@ -25,22 +25,23 @@ class PredmetServiceImpl(
     }
 
     override fun insertPredmet(predmet: Predmet): Predmet {
-        val trimmedTitle = predmet.title.trim()
-        val trimmedShortT = predmet.shortT.trim()
+        val trimmedPredmet = predmet.copy(
+            id = -1,
+            title = predmet.title.trim(),
+            shortT = predmet.shortT.trim()
+        )
 
-        check(trimmedTitle.length <= PredmetService.TITLE_MAX_LENGTH) {
-            "Title length is varchar(${PredmetService.TITLE_MAX_LENGTH})"
-        }
-
-        check(trimmedShortT.length <= PredmetService.SHORT_T_MAX_LENGTH) {
-            "ShortT length is varchar(${PredmetService.SHORT_T_MAX_LENGTH})"
-        }
-
-        return predmetRepository.save(Predmet(-1, trimmedTitle, trimmedShortT))
+        checkIsValid(trimmedPredmet)
+        return predmetRepository.save(trimmedPredmet)
     }
 
     override fun updatePredmet(predmet: Predmet): Predmet {
         checkIsExists(predmet)
+        checkIsValid(predmet)
+
+        val oldPredmet = findPredmetById(predmet.id)
+        predmet.teachers = oldPredmet.teachers
+
         return predmetRepository.save(predmet)
     }
 
@@ -56,6 +57,18 @@ class PredmetServiceImpl(
 
     override fun addTeachersToPredmet(predmet: Predmet, teachers: Set<Teacher>): Set<Teacher> {
         return predmetRepository.save(predmet.apply { this.teachers = teachers }).teachers
+    }
+
+    private fun checkIsValid(predmet: Predmet) {
+        with(predmet) {
+            check(title.length <= PredmetService.TITLE_MAX_LENGTH) {
+            "Title length is varchar(${PredmetService.TITLE_MAX_LENGTH})"
+        }
+
+            check(shortT.length <= PredmetService.SHORT_T_MAX_LENGTH) {
+                "ShortT length is varchar(${PredmetService.SHORT_T_MAX_LENGTH})"
+            }
+        }
     }
 
     private fun checkIsExists(predmet: Predmet) {
